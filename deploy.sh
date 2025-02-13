@@ -6,7 +6,7 @@ npm run build
 cd ..
 
 # Copy build files to Flask
-cp -r frontend/build/static/* backend/app/static/
-cp frontend/build/index.html backend/app/templates/
+cp -r frontend/build/static/* backend/static/
+cp frontend/build/index.html backend/templates/
 
 echo "React build files copied to Flask!"
