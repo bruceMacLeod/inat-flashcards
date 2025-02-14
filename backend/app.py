@@ -93,7 +93,7 @@ pronunciation_cache = load_pronunciation_cache()
 # Configure Gemini
 api_key=os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key= os.environ.get("GEMINI_API_KEY"))
-logging.info(f"Gemini key = {api_key}")
+#  logging.info(f"Gemini key = {api_key}")
 
 model = genai.GenerativeModel("gemini-1.5-flash-latest")
 
