@@ -274,7 +274,6 @@ def get_taxon_id(scientific_name):
     print(f"No taxon_id found for {scientific_name}.")
     return None
 
-
 @app.route("/upload_csv", methods=["POST"])
 def upload_csv():
     """Upload a CSV file, add a taxa_url column, and save only specific columns."""
@@ -301,12 +300,25 @@ def upload_csv():
             taxon_id = get_taxon_id(scientific_name)
             taxa_url = f"https://www.inaturalist.org/taxa/{taxon_id}" if taxon_id else "N/A"
 
-            # Extract observer_name, observation_year, and observation_url
-            if row.get("photos"):
-                photo = row["photos"][0]
-                attribution = photo.get('attribution', "N/A")
+            # Fetch observation details from iNaturalist API
+            observation_url = row.get("url", "")
+            if observation_url:
+                try:
+                    observation_id = observation_url.split("/")[-1]
+                    observation_response = requests.get(f"https://api.inaturalist.org/v1/observations/{observation_id}")
+                    if observation_response.status_code == 200:
+                        observation_data = observation_response.json().get("results", [{}])[0]
+                        if observation_data.get("photos"):
+                            photo = observation_data["photos"][0]
+                            attribution = photo.get('attribution', "N/A")
+                        else:
+                            attribution = "N/A"
+                    else:
+                        attribution = "N/A"
+                except Exception as e:
+                    logger.error(f"Error fetching observation details: {str(e)}")
+                    attribution = "N/A"
             else:
-                medium_url = "N/A"
                 attribution = "N/A"
 
             # Create a new row with only the required columns
@@ -325,7 +337,7 @@ def upload_csv():
         with open(output_filepath, mode="w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=[
                 "scientific_name", "common_name", "image_url", "taxa_url",
-                "observer_name", "observation_year", "observation_url"
+                "attribution"
             ])
             writer.writeheader()
             writer.writerows(rows)
