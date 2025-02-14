@@ -29,7 +29,6 @@ app = Flask(__name__)
 load_dotenv()
 # Initialize directories
 Config.init_directories()
-
 # Configure CORS
 CORS(
     app,
@@ -92,7 +91,10 @@ def load_pronunciation_cache() -> Dict[str, str]:
 pronunciation_cache = load_pronunciation_cache()
 
 # Configure Gemini
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+api_key=os.environ.get("GEMINI_API_KEY")
+genai.configure(api_key= os.environ.get("GEMINI_API_KEY"))
+logging.info(f"Gemini key = {api_key}")
+
 model = genai.GenerativeModel("gemini-1.5-flash-latest")
 
 
