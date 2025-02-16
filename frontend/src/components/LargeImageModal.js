@@ -6,6 +6,16 @@ const LargeImageModal = ({ isOpen, onClose, currentCard }) => {
     // Create the full-size image URL by replacing 'medium.jpg' with 'large.jpg'
     const largeImageUrl = currentCard.image_url.replace('medium', 'large');
 
+    // Function to check if the attribution is a URL
+    const isUrl = (string) => {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    };
+
     return (
         <div
             style={{
@@ -72,7 +82,13 @@ const LargeImageModal = ({ isOpen, onClose, currentCard }) => {
                     borderRadius: '4px',
                     zIndex: 1001 // Ensure attribution is above the image
                 }}>
-                    {currentCard.attribution}
+                    {isUrl(currentCard.attribution) ? (
+                        <a href={currentCard.attribution} target="_blank" rel="noopener noreferrer" style={{ color: '#666', textDecoration: 'underline' }}>
+                            {currentCard.attribution}
+                        </a>
+                    ) : (
+                        currentCard.attribution
+                    )}
                 </div>
 
                 {/* Close button */}
